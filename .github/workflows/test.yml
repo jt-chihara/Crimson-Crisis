@@ -12,10 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Flutter (dev channel)
+      - name: Set up Flutter (master channel)
         uses: subosito/flutter-action@v2
         with:
-          channel: dev
+          channel: master
           cache: true
 
       - name: Flutter version
@@ -34,4 +34,3 @@ jobs:
           name: coverage
           path: coverage/
           if-no-files-found: ignore
-
