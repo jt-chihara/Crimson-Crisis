@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import 'state/auth_providers.dart';
 import 'screens/login_screen.dart';
-import 'screens/timeline_screen.dart';
+import 'screens/main_shell.dart';
 
 class AppRoot extends ConsumerWidget {
   const AppRoot({super.key});
@@ -25,7 +25,7 @@ class AppRoot extends ConsumerWidget {
       home: switch (session) {
         AsyncData(value: final value) => value == null
             ? const LoginScreen()
-            : const TimelineScreen(),
+            : const MainShell(),
         AsyncError() => const LoginScreen(),
         _ => const _SplashScreen(),
       },
@@ -43,4 +43,3 @@ class _SplashScreen extends StatelessWidget {
     );
   }
 }
-

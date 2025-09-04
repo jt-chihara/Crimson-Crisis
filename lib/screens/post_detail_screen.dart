@@ -6,6 +6,7 @@ import '../models/feed.dart';
 import '../state/auth_providers.dart';
 import 'profile_screen.dart';
 import '../widgets/post_tile.dart';
+import '../widgets/classic_app_bar.dart';
 import 'reply_screen.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
@@ -111,9 +112,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   Widget build(BuildContext context) {
     final ts = DateFormat('y/MM/dd HH:mm').format(_item.createdAt.toLocal());
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('投稿'),
-      ),
+      appBar: const ClassicAppBar(),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         itemCount: _ancestors.length + 1 + 1 + 1 + (_loadingReplies ? 1 : _replies.length + 1),
