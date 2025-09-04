@@ -48,6 +48,7 @@ void main() {
                 'cid': 'c1',
                 'author': {'did': 'did:me', 'handle': 'me'},
                 'record': {'text': 'hello', 'createdAt': '2025-09-03T12:00:00Z'},
+                'embed': null,
                 'likeCount': 0,
                 'repostCount': 0,
                 'replyCount': 0,

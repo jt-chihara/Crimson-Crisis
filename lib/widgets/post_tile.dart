@@ -95,10 +95,15 @@ class PostTile extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    item.text,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  if (item.text.isNotEmpty)
+                    Text(
+                      item.text,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  if (item.imageThumbUrls.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    _ImageGrid(urls: item.imageThumbUrls),
+                  ],
                 ],
               ),
             ),
@@ -106,5 +111,35 @@ class PostTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ImageGrid extends StatelessWidget {
+  final List<String> urls;
+  const _ImageGrid({required this.urls});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final w = constraints.maxWidth;
+      if (urls.length == 1) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(urls.first, width: w, fit: BoxFit.cover),
+        );
+      }
+      final size = (w - 4) / 2;
+      final children = urls.take(4).map((u) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Image.network(u, width: size, height: size, fit: BoxFit.cover),
+        );
+      }).toList();
+      return Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: children,
+      );
+    });
   }
 }

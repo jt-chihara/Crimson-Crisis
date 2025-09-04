@@ -26,6 +26,8 @@ class FeedItem {
   final int replyCount;
   final String? viewerLike;
   final String? viewerRepost;
+  final List<String> imageThumbUrls;
+  final List<String> imageFullsizeUrls;
 
   FeedItem({
     required this.uri,
@@ -41,13 +43,52 @@ class FeedItem {
     required this.replyCount,
     required this.viewerLike,
     required this.viewerRepost,
+    required this.imageThumbUrls,
+    required this.imageFullsizeUrls,
   });
 
   factory FeedItem.fromJson(Map<String, dynamic> json) {
     final post = json['post'] as Map<String, dynamic>? ?? json;
-    final author = post['author'] as Map<String, dynamic>? ?? {};
-    final record = post['record'] as Map<String, dynamic>? ?? {};
-    final viewer = post['viewer'] as Map<String, dynamic>? ?? {};
+    final author = (post['author'] as Map?)?.cast<String, dynamic>() ?? {};
+    final record = (post['record'] as Map?)?.cast<String, dynamic>() ?? {};
+    final viewer = (post['viewer'] as Map?)?.cast<String, dynamic>() ?? {};
+    List<String> thumbs = const [];
+    List<String> fulls = const [];
+    final embed = post['embed'];
+    if (embed is Map) {
+      final emb = embed.cast<String, dynamic>();
+      final images = emb['images'];
+      if (images is List) {
+        thumbs = images
+            .map((e) => (e is Map<String, dynamic>) ? (e['thumb'] as String? ?? '') : '')
+            .where((e) => e.isNotEmpty)
+            .cast<String>()
+            .toList();
+        fulls = images
+            .map((e) => (e is Map<String, dynamic>) ? (e['fullsize'] as String? ?? '') : '')
+            .where((e) => e.isNotEmpty)
+            .cast<String>()
+            .toList();
+      }
+      // recordWithMedia#view -> media: {images: [...]}
+      final media = emb['media'];
+      if (thumbs.isEmpty && media is Map<String, dynamic>) {
+        final imgs = media['images'];
+        if (imgs is List) {
+          thumbs = imgs
+              .map((e) => (e is Map<String, dynamic>) ? (e['thumb'] as String? ?? '') : '')
+              .where((e) => e.isNotEmpty)
+              .cast<String>()
+              .toList();
+          fulls = imgs
+              .map((e) => (e is Map<String, dynamic>) ? (e['fullsize'] as String? ?? '') : '')
+              .where((e) => e.isNotEmpty)
+              .cast<String>()
+              .toList();
+        }
+      }
+    }
+
     return FeedItem(
       uri: post['uri'] as String? ?? '',
       cid: post['cid'] as String? ?? '',
@@ -63,6 +104,8 @@ class FeedItem {
       replyCount: (post['replyCount'] as int?) ?? 0,
       viewerLike: viewer['like'] as String?,
       viewerRepost: viewer['repost'] as String?,
+      imageThumbUrls: thumbs,
+      imageFullsizeUrls: fulls,
     );
   }
 }
@@ -78,4 +121,3 @@ class CreatedRecord {
         cid: json['cid'] as String? ?? '',
       );
 }
-

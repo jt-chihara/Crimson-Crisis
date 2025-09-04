@@ -76,6 +76,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
             replyCount: _item.replyCount,
             viewerLike: null,
             viewerRepost: _item.viewerRepost,
+            imageThumbUrls: _item.imageThumbUrls,
+            imageFullsizeUrls: _item.imageFullsizeUrls,
           );
         });
       } else {
@@ -95,6 +97,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
             replyCount: _item.replyCount,
             viewerLike: created.uri,
             viewerRepost: _item.viewerRepost,
+            imageThumbUrls: _item.imageThumbUrls,
+            imageFullsizeUrls: _item.imageFullsizeUrls,
           );
         });
       }
@@ -142,6 +146,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                       replyCount: current.replyCount,
                       viewerLike: null,
                       viewerRepost: current.viewerRepost,
+                      imageThumbUrls: current.imageThumbUrls,
+                      imageFullsizeUrls: current.imageFullsizeUrls,
                     );
                   });
                 } else {
@@ -161,6 +167,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                       replyCount: current.replyCount,
                       viewerLike: created.uri,
                       viewerRepost: current.viewerRepost,
+                      imageThumbUrls: current.imageThumbUrls,
+                      imageFullsizeUrls: current.imageFullsizeUrls,
                     );
                   });
                 }
@@ -240,6 +248,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     _item.text,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
+                  if (_item.imageFullsizeUrls.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _DetailImageGrid(urls: _item.imageFullsizeUrls),
+                  ],
                   const SizedBox(height: 12),
                   Text(ts, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 8),
@@ -345,6 +357,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     replyCount: current.replyCount,
                     viewerLike: null,
                     viewerRepost: current.viewerRepost,
+                    imageThumbUrls: current.imageThumbUrls,
+                    imageFullsizeUrls: current.imageFullsizeUrls,
                   );
                 });
               } else {
@@ -364,6 +378,8 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     replyCount: current.replyCount,
                     viewerLike: created.uri,
                     viewerRepost: current.viewerRepost,
+                    imageThumbUrls: current.imageThumbUrls,
+                    imageFullsizeUrls: current.imageFullsizeUrls,
                   );
                 });
               }
@@ -390,5 +406,35 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         },
       ),
     );
+  }
+}
+
+class _DetailImageGrid extends StatelessWidget {
+  final List<String> urls;
+  const _DetailImageGrid({required this.urls});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final w = constraints.maxWidth;
+      if (urls.length == 1) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(urls.first, width: w, fit: BoxFit.cover),
+        );
+      }
+      final size = (w - 8) / 2;
+      final children = urls.take(4).map((u) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(u, width: size, height: size, fit: BoxFit.cover),
+        );
+      }).toList();
+      return Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: children,
+      );
+    });
   }
 }

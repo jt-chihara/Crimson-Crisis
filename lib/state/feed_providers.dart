@@ -76,6 +76,8 @@ class TimelineController extends AsyncNotifier<TimelineData> {
         replyCount: current.replyCount,
         viewerLike: null,
         viewerRepost: current.viewerRepost,
+        imageThumbUrls: current.imageThumbUrls,
+        imageFullsizeUrls: current.imageFullsizeUrls,
       );
     } else {
       final created = await _api.like(subjectUri: current.uri, subjectCid: current.cid);
@@ -93,9 +95,10 @@ class TimelineController extends AsyncNotifier<TimelineData> {
         replyCount: current.replyCount,
         viewerLike: created.uri,
         viewerRepost: current.viewerRepost,
+        imageThumbUrls: current.imageThumbUrls,
+        imageFullsizeUrls: current.imageFullsizeUrls,
       );
     }
     state = AsyncData(TimelineData(items: items, cursor: curr.cursor));
   }
 }
-
