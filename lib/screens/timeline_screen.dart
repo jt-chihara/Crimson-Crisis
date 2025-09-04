@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/auth_providers.dart';
 import '../state/feed_providers.dart';
 import '../widgets/post_tile.dart';
+import '../widgets/classic_app_bar.dart';
 import 'compose_screen.dart';
 import 'profile_screen.dart';
 import 'post_detail_screen.dart';
@@ -16,8 +17,8 @@ class TimelineScreen extends ConsumerWidget {
     final timeline = ref.watch(timelineProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
+      backgroundColor: const Color(0xFFF0F0F0),
+      appBar: ClassicAppBar(
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -35,7 +36,26 @@ class TimelineScreen extends ConsumerWidget {
             icon: const Icon(Icons.logout),
             tooltip: 'ログアウト',
             onPressed: () async {
-              await ref.read(sessionProvider.notifier).logout();
+              final ok = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('確認'),
+                  content: const Text('ログアウトしますか？'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('キャンセル'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('はい'),
+                    ),
+                  ],
+                ),
+              );
+              if (ok == true) {
+                await ref.read(sessionProvider.notifier).logout();
+              }
             },
           ),
         ],

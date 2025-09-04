@@ -6,6 +6,7 @@ import '../state/auth_providers.dart';
 import '../api/bsky_api.dart';
 import '../models/feed.dart';
 import '../widgets/post_tile.dart';
+import '../widgets/classic_app_bar.dart';
 import 'post_detail_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -107,7 +108,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final asyncProfile = ref.watch(profileProvider(widget.actor));
     return Scaffold(
-      appBar: AppBar(),
+      appBar: const ClassicAppBar(),
       body: asyncProfile.when(
         data: (p) => ListView.builder(
           itemCount: 1 + _items.length + 1,
