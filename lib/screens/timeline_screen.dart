@@ -20,43 +20,19 @@ class TimelineScreen extends ConsumerWidget {
       backgroundColor: const Color(0xFFF0F0F0),
       appBar: ClassicAppBar(
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: '投稿',
-            onPressed: () async {
-              final ok = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const ComposeScreen()),
-              );
-              if (ok == true) {
-                await ref.read(timelineProvider.notifier).refresh();
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'ログアウト',
-            onPressed: () async {
-              final ok = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('確認'),
-                  content: const Text('ログアウトしますか？'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('キャンセル'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text('はい'),
-                    ),
-                  ],
-                ),
-              );
-              if (ok == true) {
-                await ref.read(sessionProvider.notifier).logout();
-              }
-            },
+          Tooltip(
+            message: '投稿',
+            child: ClassicIconButton(
+              icon: Icons.edit,
+              onPressed: () async {
+                final ok = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(builder: (_) => const ComposeScreen()),
+                );
+                if (ok == true) {
+                  await ref.read(timelineProvider.notifier).refresh();
+                }
+              },
+            ),
           ),
         ],
       ),
