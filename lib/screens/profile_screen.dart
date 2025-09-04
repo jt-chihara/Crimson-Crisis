@@ -111,8 +111,40 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final asyncProfile = ref.watch(profileProvider(widget.actor));
+    final ses = ref.watch(sessionProvider).valueOrNull;
+    final isMe = ses != null && (widget.actor == ses.did || widget.actor == ses.handle);
     return Scaffold(
-      appBar: const ClassicAppBar(),
+      appBar: ClassicAppBar(
+        actions: isMe
+            ? [
+                ClassicIconButton(
+                  icon: Icons.logout,
+                  onPressed: () async {
+                    final ok = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('確認'),
+                        content: const Text('ログアウトしますか？'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('キャンセル'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text('はい'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (ok == true) {
+                      await ref.read(sessionProvider.notifier).logout();
+                    }
+                  },
+                ),
+              ]
+            : null,
+      ),
       body: asyncProfile.when(
         data: (p) => ListView.builder(
           itemCount: 1 + _items.length + 1,

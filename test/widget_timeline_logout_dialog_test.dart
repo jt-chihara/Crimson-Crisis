@@ -1,8 +1,9 @@
 import 'package:crimsoncrisis/models/feed.dart';
+import 'package:crimsoncrisis/models/profile.dart';
 import 'package:crimsoncrisis/models/session.dart';
-import 'package:crimsoncrisis/screens/timeline_screen.dart';
+import 'package:crimsoncrisis/screens/profile_screen.dart';
 import 'package:crimsoncrisis/state/auth_providers.dart';
-import 'package:crimsoncrisis/state/feed_providers.dart';
+import 'package:crimsoncrisis/api/bsky_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,14 +26,10 @@ FeedItem _feed(String text) => FeedItem(
       imageFullsizeUrls: const [],
     );
 
-class _FakeTimelineController extends TimelineController {
-  @override
-  Future<TimelineData> build() async =>
-      TimelineData(items: [_feed('hello')], cursor: null);
-}
-
 class _LogoutSpySession extends SessionController {
   bool didLogout = false;
+  final BskyApi apiImpl;
+  _LogoutSpySession(this.apiImpl);
 
   @override
   Future<Session?> build() async => const Session(
@@ -44,6 +41,9 @@ class _LogoutSpySession extends SessionController {
       );
 
   @override
+  BskyApi? get api => apiImpl;
+
+  @override
   Future<void> logout() async {
     didLogout = true;
     // Do not call super.logout() to avoid accessing uninitialized storage in tests
@@ -53,30 +53,54 @@ class _LogoutSpySession extends SessionController {
 
 void main() {
   testWidgets('Logout shows confirmation and logs out on yes', (tester) async {
-    final session = _LogoutSpySession();
-
+    final api = _TestApi();
+    final session = _LogoutSpySession(api);
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sessionProvider.overrideWith(() => session),
-          timelineProvider.overrideWith(() => _FakeTimelineController()),
-        ],
-        child: const MaterialApp(home: TimelineScreen()),
+        overrides: [sessionProvider.overrideWith(() => session)],
+        child: const MaterialApp(home: ProfileScreen(actor: 'did:me')),
       ),
     );
 
+    // Wait for app bar actions to appear
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump(const Duration(milliseconds: 50));
+
     // open dialog
-    await tester.tap(find.byIcon(Icons.logout));
-    await tester.pump();
+    final logoutFinder = find.byIcon(Icons.logout);
+    expect(logoutFinder, findsOneWidget);
+    await tester.tap(logoutFinder);
     await tester.pump(const Duration(milliseconds: 50));
 
     expect(find.text('ログアウトしますか？'), findsOneWidget);
 
     // confirm
     await tester.tap(find.widgetWithText(TextButton, 'はい'));
-    await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
     expect(session.didLogout, isTrue);
   });
+}
+
+class _TestApi extends BskyApi {
+  _TestApi() : super(pds: 'https://example.com');
+  @override
+  Future<TimelineResponse> getAuthorFeed({required String actor, String? cursor, int limit = 30}) async {
+    return TimelineResponse(cursor: null, feed: []);
+  }
+
+  @override
+  Future<ActorProfile> getProfile({required String actor}) async {
+    return const ActorProfile(
+      did: 'did:me',
+      handle: 'me',
+      displayName: 'Me',
+      avatar: null,
+      banner: null,
+      description: null,
+      followersCount: 0,
+      followsCount: 0,
+      postsCount: 0,
+    );
+  }
 }

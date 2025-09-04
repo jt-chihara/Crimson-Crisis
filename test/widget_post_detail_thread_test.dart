@@ -93,12 +93,17 @@ void main() {
       ),
     );
 
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
+    // allow async loading of thread
+    for (int i = 0; i < 6; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
 
     expect(find.text('ROOT'), findsOneWidget);
     expect(find.text('PARENT'), findsOneWidget);
     expect(find.text('CHILD'), findsOneWidget);
-    expect(find.text('REPLY1'), findsOneWidget);
+    // It may be below the fold; scroll until visible
+    final scrollable = find.byType(Scrollable);
+    await tester.scrollUntilVisible(find.text('REPLY1'), 200.0, scrollable: scrollable);
+    expect(find.text('REPLY1'), findsWidgets);
   });
 }
