@@ -22,6 +22,8 @@ FeedItem _feed({required String uri, required String cid, required String text})
     replyCount: 0,
     viewerLike: null,
     viewerRepost: null,
+    imageThumbUrls: const [],
+    imageFullsizeUrls: const [],
   );
 }
 
@@ -91,7 +93,8 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     expect(find.text('ROOT'), findsOneWidget);
     expect(find.text('PARENT'), findsOneWidget);
@@ -99,4 +102,3 @@ void main() {
     expect(find.text('REPLY1'), findsOneWidget);
   });
 }
-

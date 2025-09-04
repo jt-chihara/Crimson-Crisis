@@ -274,6 +274,7 @@ class BskyApi {
     required String text,
     DateTime? createdAt,
     List<String>? langs,
+    Map<String, dynamic>? embed,
   }) async {
     final now = (createdAt ?? DateTime.now().toUtc()).toIso8601String();
     final res = await _post('com.atproto.repo.createRecord', {
@@ -284,10 +285,31 @@ class BskyApi {
         'text': text,
         'createdAt': now,
         if (langs != null) 'langs': langs,
+        if (embed != null) 'embed': embed,
       },
     }, auth: true);
     final map = jsonDecode(res.body) as Map<String, dynamic>;
     return CreatedRecord.fromJson(map);
+  }
+
+  // Upload image/file blob
+  Future<Map<String, dynamic>> uploadBlob({
+    required List<int> bytes,
+    required String contentType,
+  }) async {
+    final res = await _client.post(
+      _xrpc('com.atproto.repo.uploadBlob'),
+      headers: {
+        ..._headers(auth: true),
+        'Content-Type': contentType,
+      },
+      body: bytes,
+    );
+    _throwIfError(res);
+    final map = jsonDecode(res.body) as Map<String, dynamic>;
+    final blob = map['blob'];
+    if (blob is Map<String, dynamic>) return blob;
+    throw StateError('Invalid blob response');
   }
 
   // Likes

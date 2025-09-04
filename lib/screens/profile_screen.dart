@@ -80,6 +80,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           replyCount: current.replyCount,
           viewerLike: null,
           viewerRepost: current.viewerRepost,
+          imageThumbUrls: current.imageThumbUrls,
+          imageFullsizeUrls: current.imageFullsizeUrls,
         );
       });
     } else {
@@ -99,6 +101,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           replyCount: current.replyCount,
           viewerLike: created.uri,
           viewerRepost: current.viewerRepost,
+          imageThumbUrls: current.imageThumbUrls,
+          imageFullsizeUrls: current.imageFullsizeUrls,
         );
       });
     }

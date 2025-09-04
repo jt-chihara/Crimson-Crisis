@@ -21,6 +21,8 @@ FeedItem _feed(String text) => FeedItem(
       replyCount: 0,
       viewerLike: null,
       viewerRepost: null,
+      imageThumbUrls: const [],
+      imageFullsizeUrls: const [],
     );
 
 class _FakeTimelineController extends TimelineController {
@@ -65,13 +67,15 @@ void main() {
 
     // open dialog
     await tester.tap(find.byIcon(Icons.logout));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     expect(find.text('ログアウトしますか？'), findsOneWidget);
 
     // confirm
     await tester.tap(find.widgetWithText(TextButton, 'はい'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     expect(session.didLogout, isTrue);
   });

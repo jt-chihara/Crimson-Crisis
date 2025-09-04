@@ -11,7 +11,7 @@ class _ComposeApi extends BskyApi {
   _ComposeApi() : super(pds: 'https://example.com');
   String? lastText;
   @override
-  Future<CreatedRecord> createPost({required String text, DateTime? createdAt, List<String>? langs}) async {
+  Future<CreatedRecord> createPost({required String text, DateTime? createdAt, List<String>? langs, Map<String, dynamic>? embed}) async {
     lastText = text;
     return CreatedRecord(uri: 'u', cid: 'c');
   }
@@ -51,7 +51,8 @@ void main() {
 
     // tap send
     await tester.tap(find.widgetWithText(TextButton, '送信'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
 
     expect(api.lastText, 'hello world');
   });
