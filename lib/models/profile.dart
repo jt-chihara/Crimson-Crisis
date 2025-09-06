@@ -34,3 +34,8 @@ class ActorProfile {
       );
 }
 
+class ActorListResponse {
+  final String? cursor;
+  final List<ActorProfile> items;
+  const ActorListResponse({required this.cursor, required this.items});
+}

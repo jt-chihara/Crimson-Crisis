@@ -7,14 +7,21 @@ import 'profile_screen.dart';
 import '../widgets/classic_bottom_bar.dart';
 
 class MainShell extends ConsumerStatefulWidget {
-  const MainShell({super.key});
+  final int initialIndex;
+  const MainShell({super.key, this.initialIndex = 0});
 
   @override
   ConsumerState<MainShell> createState() => _MainShellState();
 }
 
 class _MainShellState extends ConsumerState<MainShell> {
-  int _index = 0;
+  late int _index;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,10 @@ class _MainShellState extends ConsumerState<MainShell> {
       const TimelineScreen(),
       const _PlaceholderScreen(title: 'Connect'),
       const _PlaceholderScreen(title: 'Discover'),
-      if (meActor.isNotEmpty) ProfileScreen(actor: meActor) else const _PlaceholderScreen(title: 'Me'),
+      if (meActor.isNotEmpty)
+        ProfileScreen(actor: meActor, showBottomBar: false)
+      else
+        const _PlaceholderScreen(title: 'Me'),
     ];
 
     return Scaffold(
