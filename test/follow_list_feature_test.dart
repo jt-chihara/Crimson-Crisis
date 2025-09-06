@@ -115,7 +115,11 @@ void main() {
     }
 
     // Tap FOLLOWING and verify list appears (Alice/Bob)
-    await tester.tap(find.text('FOLLOWING'));
+    final followingInk = find.ancestor(
+      of: find.text('FOLLOWING'),
+      matching: find.byType(InkWell),
+    );
+    await tester.tap(followingInk, warnIfMissed: false);
     for (int i = 0; i < 8; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
@@ -131,7 +135,11 @@ void main() {
     }
 
     // Tap FOLLOWERS and verify list appears (Carol/Dave)
-    await tester.tap(find.text('FOLLOWERS'));
+    final followersInk = find.ancestor(
+      of: find.text('FOLLOWERS'),
+      matching: find.byType(InkWell),
+    );
+    await tester.tap(followersInk, warnIfMissed: false);
     for (int i = 0; i < 8; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
