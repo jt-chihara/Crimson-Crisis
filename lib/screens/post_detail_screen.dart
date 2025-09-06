@@ -9,6 +9,8 @@ import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
 import 'reply_screen.dart';
 import 'compose_screen.dart';
+import '../widgets/classic_bottom_bar.dart';
+import 'main_shell.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
   final FeedItem item;
@@ -351,6 +353,21 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
             },
           );
         },
+      ),
+      bottomNavigationBar: ClassicBottomBar(
+        currentIndex: 0,
+        onTap: (i) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
+            (route) => false,
+          );
+        },
+        items: const [
+          ClassicBottomItem(icon: Icons.home, label: 'Home'),
+          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
+          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
+          ClassicBottomItem(icon: Icons.person, label: 'Me'),
+        ],
       ),
     );
   }

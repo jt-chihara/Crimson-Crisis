@@ -9,10 +9,15 @@ import '../models/profile.dart';
 import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
 import 'post_detail_screen.dart';
+import 'compose_screen.dart';
+import '../widgets/classic_bottom_bar.dart';
+import 'main_shell.dart';
+import 'follow_list_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   final String actor; // did or handle
-  const ProfileScreen({super.key, required this.actor});
+  final bool showBottomBar;
+  const ProfileScreen({super.key, required this.actor, this.showBottomBar = true});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -116,6 +121,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final isMe = ses != null && (widget.actor == ses.did || widget.actor == ses.handle);
     return Scaffold(
       appBar: ClassicAppBar(
+        leadingWidth: 72,
+        leading: !isMe
+            ? Tooltip(
+                message: '戻る',
+                child: ClassicIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.of(context).maybePop(),
+                ),
+              )
+            : null,
         actions: isMe
             ? [
                 ClassicIconButton(
@@ -144,18 +159,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   },
                 ),
               ]
-            : null,
+            : [
+                ClassicIconButton(
+                  icon: Icons.edit,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ComposeScreen()),
+                  ),
+                ),
+              ],
       ),
       body: asyncProfile.when(
         data: (p) => ListView.builder(
           itemCount: 1 + _items.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
-              if (isMe) {
-                return _MeHeader(profile: p);
-              }
-              // fallback for others: simple header
-              return _SimpleHeader(profile: p);
+              // Use the same classic header for both Me and others
+              return _MeHeader(profile: p);
             }
             final feedIndex = index - 1;
             if (feedIndex == _items.length) {
@@ -192,6 +211,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('読み込みに失敗: $e')),
       ),
+      bottomNavigationBar: widget.showBottomBar
+          ? ClassicBottomBar(
+        currentIndex: 0,
+        onTap: (i) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
+            (route) => false,
+          );
+        },
+        items: const [
+          ClassicBottomItem(icon: Icons.home, label: 'Home'),
+          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
+          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
+          ClassicBottomItem(icon: Icons.person, label: 'Me'),
+        ],
+      )
+          : null,
     );
   }
 }
@@ -277,9 +313,29 @@ class _MeHeader extends StatelessWidget {
             children: [
               _StatColumn(label: 'TWEETS', value: profile.postsCount),
               _divider(),
-              _StatColumn(label: 'FOLLOWING', value: profile.followsCount),
+              _StatColumn(
+                label: 'FOLLOWING',
+                value: profile.followsCount,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => FollowListScreen(actor: profile.did.isNotEmpty ? profile.did : profile.handle, showFollowing: true),
+                    ),
+                  );
+                },
+              ),
               _divider(),
-              _StatColumn(label: 'FOLLOWERS', value: profile.followersCount),
+              _StatColumn(
+                label: 'FOLLOWERS',
+                value: profile.followersCount,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => FollowListScreen(actor: profile.did.isNotEmpty ? profile.did : profile.handle, showFollowing: false),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -301,22 +357,26 @@ class _MeHeader extends StatelessWidget {
 class _StatColumn extends StatelessWidget {
   final String label;
   final int value;
-  const _StatColumn({required this.label, required this.value});
+  final VoidCallback? onTap;
+  const _StatColumn({required this.label, required this.value, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('$value', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 2),
-          Text(label,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(letterSpacing: 0.5, color: Colors.black54)),
-        ],
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('$value', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 2),
+            Text(label,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall
+                    ?.copyWith(letterSpacing: 0.5, color: Colors.black54)),
+          ],
+        ),
       ),
     );
   }
@@ -363,6 +423,41 @@ class _SimpleHeader extends StatelessWidget {
                     Text('@${profile.handle}',
                         style: Theme.of(context).textTheme.bodyMedium),
                   ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Stats row for others as well
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+          child: Row(
+            children: [
+              _StatColumn(label: 'TWEETS', value: profile.postsCount),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => FollowListScreen(actor: profile.did.isNotEmpty ? profile.did : profile.handle, showFollowing: true),
+                      ),
+                    );
+                  },
+                  child: Text('FOLLOWING ${profile.followsCount}'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => FollowListScreen(actor: profile.did.isNotEmpty ? profile.did : profile.handle, showFollowing: false),
+                      ),
+                    );
+                  },
+                  child: Text('FOLLOWERS ${profile.followersCount}'),
                 ),
               ),
             ],

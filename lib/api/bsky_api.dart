@@ -183,6 +183,36 @@ class BskyApi {
     return ActorProfile.fromJson(map);
   }
 
+  // Graph: follows (who the actor follows)
+  Future<ActorListResponse> getFollows({required String actor, String? cursor, int limit = 50}) async {
+    final res = await _get('app.bsky.graph.getFollows', {
+      'actor': actor,
+      'limit': '$limit',
+      if (cursor != null) 'cursor': cursor,
+    }, auth: true);
+    final map = jsonDecode(res.body) as Map<String, dynamic>;
+    final list = (map['follows'] as List? ?? [])
+        .whereType<Map>()
+        .map((e) => ActorProfile.fromJson(e.cast<String, dynamic>()))
+        .toList();
+    return ActorListResponse(cursor: map['cursor'] as String?, items: list);
+  }
+
+  // Graph: followers (who follows the actor)
+  Future<ActorListResponse> getFollowers({required String actor, String? cursor, int limit = 50}) async {
+    final res = await _get('app.bsky.graph.getFollowers', {
+      'actor': actor,
+      'limit': '$limit',
+      if (cursor != null) 'cursor': cursor,
+    }, auth: true);
+    final map = jsonDecode(res.body) as Map<String, dynamic>;
+    final list = (map['followers'] as List? ?? [])
+        .whereType<Map>()
+        .map((e) => ActorProfile.fromJson(e.cast<String, dynamic>()))
+        .toList();
+    return ActorListResponse(cursor: map['cursor'] as String?, items: list);
+  }
+
   // Feed: author feed
   Future<TimelineResponse> getAuthorFeed({
     required String actor,
