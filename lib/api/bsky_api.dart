@@ -58,25 +58,47 @@ class BskyApi {
     return headers;
   }
 
+  Future<http.Response> _withRefresh(
+    Future<http.Response> Function() makeRequest, {
+    bool auth = false,
+  }) async {
+    try {
+      final res = await makeRequest();
+      _throwIfError(res);
+      return res;
+    } on BskyHttpException catch (e) {
+      // If token expired, try to refresh once and retry
+      if (auth && (e.code == 'ExpiredToken' || e.statusCode == 401)) {
+        await refreshSession();
+        final res2 = await makeRequest();
+        _throwIfError(res2);
+        return res2;
+      }
+      rethrow;
+    }
+  }
+
   Future<http.Response> _post(String nsid, Map<String, dynamic> body,
       {bool auth = false}) async {
-    final res = await _client.post(
-      _xrpc(nsid),
-      headers: _headers(auth: auth),
-      body: jsonEncode(body),
+    return _withRefresh(
+      () => _client.post(
+        _xrpc(nsid),
+        headers: _headers(auth: auth),
+        body: jsonEncode(body),
+      ),
+      auth: auth,
     );
-    _throwIfError(res);
-    return res;
   }
 
   Future<http.Response> _get(String nsid, Map<String, String> params,
       {bool auth = false}) async {
-    final res = await _client.get(
-      _xrpc(nsid, params),
-      headers: _headers(auth: auth),
+    return _withRefresh(
+      () => _client.get(
+        _xrpc(nsid, params),
+        headers: _headers(auth: auth),
+      ),
+      auth: auth,
     );
-    _throwIfError(res);
-    return res;
   }
 
   void _throwIfError(http.Response res) {
