@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/auth_providers.dart';
 import '../widgets/classic_app_bar.dart';
+import '../widgets/classic_bottom_bar.dart';
+import 'main_shell.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ComposeScreen extends ConsumerStatefulWidget {
@@ -172,6 +174,21 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: ClassicBottomBar(
+        currentIndex: 0,
+        onTap: (i) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
+            (route) => false,
+          );
+        },
+        items: const [
+          ClassicBottomItem(icon: Icons.home, label: 'Home'),
+          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
+          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
+          ClassicBottomItem(icon: Icons.person, label: 'Me'),
+        ],
       ),
     );
   }
