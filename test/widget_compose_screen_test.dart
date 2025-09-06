@@ -49,8 +49,8 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'hello world');
     await tester.pump();
 
-    // tap send
-    await tester.tap(find.widgetWithText(TextButton, '送信'));
+    // tap send (icon button)
+    await tester.tap(find.byIcon(Icons.send));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
