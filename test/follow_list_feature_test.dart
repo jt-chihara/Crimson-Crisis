@@ -115,6 +115,8 @@ void main() {
     }
 
     // Tap FOLLOWING and verify list appears (Alice/Bob)
+    // Ensure target visible
+    await tester.scrollUntilVisible(find.text('FOLLOWING'), 200.0, scrollable: find.byType(Scrollable).first);
     final followingInk = find.ancestor(
       of: find.text('FOLLOWING'),
       matching: find.byType(InkWell),
@@ -135,6 +137,7 @@ void main() {
     }
 
     // Tap FOLLOWERS and verify list appears (Carol/Dave)
+    await tester.scrollUntilVisible(find.text('FOLLOWERS'), 200.0, scrollable: find.byType(Scrollable).first);
     final followersInk = find.ancestor(
       of: find.text('FOLLOWERS'),
       matching: find.byType(InkWell),
