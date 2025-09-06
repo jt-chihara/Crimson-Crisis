@@ -271,6 +271,7 @@ class BskyApi {
     required String rootCid,
     DateTime? createdAt,
     List<String>? langs,
+    Map<String, dynamic>? embed,
   }) async {
     final now = (createdAt ?? DateTime.now().toUtc()).toIso8601String();
     final res = await _post('com.atproto.repo.createRecord', {
@@ -285,6 +286,7 @@ class BskyApi {
           'root': {'uri': rootUri, 'cid': rootCid},
           'parent': {'uri': parentUri, 'cid': parentCid},
         },
+        if (embed != null) 'embed': embed,
       },
     }, auth: true);
     final map = jsonDecode(res.body) as Map<String, dynamic>;
