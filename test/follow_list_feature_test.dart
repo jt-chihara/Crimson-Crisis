@@ -67,6 +67,13 @@ class _SessionStub extends SessionController {
 }
 
 void main() {
+  Future<void> _waitForFinder(WidgetTester tester, Finder finder,
+      {int maxTries = 30}) async {
+    for (int i = 0; i < maxTries; i++) {
+      if (tester.any(finder)) return;
+      await tester.pump(const Duration(milliseconds: 60));
+    }
+  }
   testWidgets('FollowListScreen shows follows', (tester) async {
     final api = _ApiStub();
     await tester.pumpWidget(
@@ -122,9 +129,7 @@ void main() {
       matching: find.byType(InkWell),
     );
     await tester.tap(followingInk, warnIfMissed: false);
-    for (int i = 0; i < 8; i++) {
-      await tester.pump(const Duration(milliseconds: 50));
-    }
+    await _waitForFinder(tester, find.text('Alice'));
     expect(find.text('Alice'), findsWidgets);
     expect(find.text('Bob'), findsWidgets);
 
@@ -143,9 +148,7 @@ void main() {
       matching: find.byType(InkWell),
     );
     await tester.tap(followersInk, warnIfMissed: false);
-    for (int i = 0; i < 8; i++) {
-      await tester.pump(const Duration(milliseconds: 50));
-    }
+    await _waitForFinder(tester, find.text('Carol'));
     expect(find.text('Carol'), findsWidgets);
     expect(find.text('Dave'), findsWidgets);
   });
