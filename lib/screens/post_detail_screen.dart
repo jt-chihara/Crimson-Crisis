@@ -118,10 +118,13 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     final ts = DateFormat('y/MM/dd HH:mm').format(_item.createdAt.toLocal());
     return Scaffold(
       appBar: ClassicAppBar(
-        leadingWidth: 96,
-        leading: ClassicCapsuleButton(
-          text: 'ツイート',
-          onPressed: () => Navigator.of(context).maybePop(),
+        leadingWidth: 72,
+        leading: Tooltip(
+          message: '戻る',
+          child: ClassicIconButton(
+            icon: Icons.arrow_back,
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
         ),
         actions: [
           ClassicIconButton(
