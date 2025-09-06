@@ -77,9 +77,11 @@ class ClassicCapsuleButton extends StatelessWidget {
 }
 
 class ClassicIconButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? child;
   final VoidCallback? onPressed;
-  const ClassicIconButton({super.key, required this.icon, this.onPressed});
+  const ClassicIconButton({super.key, this.icon, this.child, this.onPressed})
+      : assert(icon != null || child != null);
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +102,7 @@ class ClassicIconButton extends StatelessWidget {
             ),
             border: Border.all(color: const Color(0x66FFFFFF)),
           ),
-          child: Icon(icon, size: 18, color: Colors.white),
+          child: child ?? Icon(icon, size: 18, color: Colors.white),
         ),
       ),
     );

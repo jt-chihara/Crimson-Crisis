@@ -69,23 +69,30 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
     final canSend = (_text.text.trim().isNotEmpty || _images.isNotEmpty) && !_posting;
     return Scaffold(
       appBar: ClassicAppBar(
-        leadingWidth: 96,
-        leading: TextButton(
-          onPressed: _posting ? null : () => Navigator.of(context).maybePop(),
-          style: TextButton.styleFrom(foregroundColor: Colors.white),
-          child: const Text('キャンセル', maxLines: 1, softWrap: false),
+        leadingWidth: 72,
+        leading: Tooltip(
+          message: 'キャンセル',
+          child: ClassicIconButton(
+            icon: Icons.close,
+            onPressed: _posting ? null : () => Navigator.of(context).maybePop(),
+          ),
         ),
         actions: [
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
-            onPressed: canSend ? _post : null,
-            child: _posting
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('送信'),
+          Tooltip(
+            message: '送信',
+            child: Opacity(
+              opacity: canSend ? 1.0 : 0.5,
+              child: ClassicIconButton(
+                child: _posting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.send, color: Colors.white, size: 18),
+                onPressed: canSend ? _post : null,
+              ),
+            ),
           ),
         ],
       ),
