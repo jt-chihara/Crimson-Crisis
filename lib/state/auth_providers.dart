@@ -24,9 +24,14 @@ class SessionController extends AsyncNotifier<Session?> {
     if (saved != null) {
       _api = BskyApi(pds: saved.pds)
         ..setTokens(saved.accessJwt, saved.refreshJwt, saved.did);
-      // Override the provider so other readers get the configured API
-      ref.onDispose(() {});
-      // No-op; in widgets where needed, use apiFromSession
+      // Try to refresh tokens proactively; fall back to saved on failure
+      try {
+        final refreshed = await _api!.refreshSession();
+        await _storage.save(refreshed);
+        return refreshed;
+      } catch (_) {
+        // ignore; keep using saved tokens until a request triggers a refresh
+      }
     }
     return saved;
   }
@@ -60,4 +65,3 @@ class SessionController extends AsyncNotifier<Session?> {
 
   BskyApi? get api => _api;
 }
-
