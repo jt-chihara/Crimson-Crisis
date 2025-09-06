@@ -5,6 +5,7 @@ import '../state/profile_providers.dart';
 import '../state/auth_providers.dart';
 import '../api/bsky_api.dart';
 import '../models/feed.dart';
+import '../models/profile.dart';
 import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
 import 'post_detail_screen.dart';
@@ -106,7 +107,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         );
       });
     }
-  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -150,70 +151,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           itemCount: 1 + _items.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (p.banner != null)
-                    Image.network(
-                      p.banner!,
-                      height: 140,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox(height: 8),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundImage: (p.avatar != null && p.avatar!.isNotEmpty)
-                              ? NetworkImage(p.avatar!)
-                              : null,
-                          child: (p.avatar == null || p.avatar!.isEmpty)
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                p.displayName ?? '@${p.handle}',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              Text('@${p.handle}',
-                                  style: Theme.of(context).textTheme.bodyMedium),
-                              const SizedBox(height: 8),
-                              if (p.description != null && p.description!.isNotEmpty)
-                                Text(p.description!),
-                              const SizedBox(height: 12),
-                              DefaultTextStyle(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(color: Colors.black54),
-                                child: Row(
-                                  children: [
-                                    Text('Posts ${p.postsCount}'),
-                                    const SizedBox(width: 12),
-                                    Text('Following ${p.followsCount}'),
-                                    const SizedBox(width: 12),
-                                    Text('Followers ${p.followersCount}'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                ],
-              );
+              if (isMe) {
+                return _MeHeader(profile: p);
+              }
+              // fallback for others: simple header
+              return _SimpleHeader(profile: p);
             }
             final feedIndex = index - 1;
             if (feedIndex == _items.length) {
@@ -250,6 +192,184 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('読み込みに失敗: $e')),
       ),
+    );
+  }
+}
+
+class _MeHeader extends StatelessWidget {
+  final ActorProfile profile;
+  const _MeHeader({required this.profile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Banner + avatar centered
+        SizedBox(
+          height: 200,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (profile.banner != null && profile.banner!.isNotEmpty)
+                Image.network(profile.banner!, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Color(0x66000000)],
+                  ),
+                ),
+              ),
+              // Avatar
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: const [
+                      BoxShadow(color: Color(0x33000000), blurRadius: 6, offset: Offset(0, 3)),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(3),
+                  child: CircleAvatar(
+                    radius: 36,
+                    backgroundImage: (profile.avatar != null && profile.avatar!.isNotEmpty)
+                        ? NetworkImage(profile.avatar!)
+                        : null,
+                    child: (profile.avatar == null || profile.avatar!.isEmpty)
+                        ? const Icon(Icons.person, size: 32)
+                        : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Center(
+          child: Column(
+            children: [
+              Text(profile.displayName ?? '@${profile.handle}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black87)),
+              Text('@${profile.handle}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Stats card
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: const [
+              BoxShadow(color: Color(0x16000000), blurRadius: 6, offset: Offset(0, 3)),
+            ],
+          ),
+          child: Row(
+            children: [
+              _StatColumn(label: 'TWEETS', value: profile.postsCount),
+              _divider(),
+              _StatColumn(label: 'FOLLOWING', value: profile.followsCount),
+              _divider(),
+              _StatColumn(label: 'FOLLOWERS', value: profile.followersCount),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Divider(height: 1),
+      ],
+    );
+  }
+
+  Widget _divider() => const SizedBox(
+        width: 1,
+        height: 28,
+        child: DecoratedBox(
+          decoration: BoxDecoration(color: Color(0xFFE0E0E0)),
+        ),
+      );
+}
+
+class _StatColumn extends StatelessWidget {
+  final String label;
+  final int value;
+  const _StatColumn({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('$value', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 2),
+          Text(label,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.copyWith(letterSpacing: 0.5, color: Colors.black54)),
+        ],
+      ),
+    );
+  }
+}
+
+class _SimpleHeader extends StatelessWidget {
+  final ActorProfile profile;
+  const _SimpleHeader({required this.profile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (profile.banner != null)
+          Image.network(
+            profile.banner!,
+            height: 140,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const SizedBox(height: 8),
+          ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundImage: (profile.avatar != null && profile.avatar!.isNotEmpty)
+                    ? NetworkImage(profile.avatar!)
+                    : null,
+                child: (profile.avatar == null || profile.avatar!.isEmpty)
+                    ? const Icon(Icons.person)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(profile.displayName ?? '@${profile.handle}',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    Text('@${profile.handle}',
+                        style: Theme.of(context).textTheme.bodyMedium),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+      ],
     );
   }
 }

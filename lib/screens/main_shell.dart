@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/auth_providers.dart';
 import 'timeline_screen.dart';
 import 'profile_screen.dart';
+import '../widgets/classic_bottom_bar.dart';
 
 class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
@@ -29,15 +30,14 @@ class _MainShellState extends ConsumerState<MainShell> {
 
     return Scaffold(
       body: pages[_index],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: ClassicBottomBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.alternate_email), label: 'Connect'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Discover'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Me'),
+          ClassicBottomItem(icon: Icons.home, label: 'Home'),
+          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
+          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
+          ClassicBottomItem(icon: Icons.person, label: 'Me'),
         ],
       ),
     );
@@ -58,4 +58,3 @@ class _PlaceholderScreen extends StatelessWidget {
     );
   }
 }
-
