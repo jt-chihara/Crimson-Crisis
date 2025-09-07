@@ -114,7 +114,7 @@ class _FollowListScreenState extends ConsumerState<FollowListScreen> {
               ),
             ),
       bottomNavigationBar: ClassicBottomBar(
-        currentIndex: 0,
+        currentIndex: _currentTabIndex(ref),
         onTap: (i) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
@@ -129,6 +129,12 @@ class _FollowListScreenState extends ConsumerState<FollowListScreen> {
         ],
       ),
     );
+  }
+
+  int _currentTabIndex(WidgetRef ref) {
+    final ses = ref.watch(sessionProvider).valueOrNull;
+    final isMe = ses != null && (widget.actor == ses.did || widget.actor == ses.handle);
+    return isMe ? 3 : 0; // Me tab when viewing own lists
   }
 }
 
