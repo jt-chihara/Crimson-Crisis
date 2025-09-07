@@ -6,7 +6,8 @@ class ClassicAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final double? leadingWidth;
   final String? titleText; // if null, show Bluesky icon
-  const ClassicAppBar({super.key, this.actions, this.leading, this.leadingWidth, this.titleText});
+  final PreferredSizeWidget? bottom;
+  const ClassicAppBar({super.key, this.actions, this.leading, this.leadingWidth, this.titleText, this.bottom});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -23,6 +24,7 @@ class ClassicAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: leading,
       leadingWidth: leadingWidth,
       actions: actions,
+      bottom: bottom,
       title: titleText != null
           ? Text(
               titleText!,
@@ -32,12 +34,19 @@ class ClassicAppBar extends StatelessWidget implements PreferredSizeWidget {
                 letterSpacing: 0.5,
               ),
             )
-          : ColorFiltered(
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              child: Image.network(
-                'https://bsky.app/static/apple-touch-icon.png',
-                height: 24,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.cloud, color: Colors.white),
+          : SizedBox(
+              width: 28,
+              height: 28,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  child: Image.network(
+                    'https://bsky.app/static/apple-touch-icon.png',
+                    filterQuality: FilterQuality.high,
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.cloud, color: Colors.white),
+                  ),
+                ),
               ),
             ),
       flexibleSpace: Container(

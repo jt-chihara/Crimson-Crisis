@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../state/auth_providers.dart';
 import 'timeline_screen.dart';
 import 'profile_screen.dart';
+import 'connect_screen.dart';
 import '../widgets/classic_bottom_bar.dart';
 
 class MainShell extends ConsumerStatefulWidget {
@@ -30,7 +31,7 @@ class _MainShellState extends ConsumerState<MainShell> {
 
     final pages = <Widget>[
       const TimelineScreen(),
-      const _PlaceholderScreen(title: 'Connect'),
+      const ConnectScreen(),
       const _PlaceholderScreen(title: 'Discover'),
       if (meActor.isNotEmpty)
         ProfileScreen(actor: meActor, showBottomBar: false)
