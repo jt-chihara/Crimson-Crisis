@@ -213,7 +213,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       bottomNavigationBar: widget.showBottomBar
           ? ClassicBottomBar(
-        currentIndex: 0,
+        currentIndex: isMe ? 3 : 0,
         onTap: (i) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
