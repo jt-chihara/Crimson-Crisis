@@ -546,7 +546,7 @@ class _StatTile extends StatelessWidget {
       ),
       child: ListTile(
         title: Text(label),
-        trailing: Text('${value.toString()}'),
+        trailing: Text(value.toString()),
       ),
     );
   }

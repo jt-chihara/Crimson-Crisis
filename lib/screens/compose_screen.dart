@@ -85,6 +85,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             child: Opacity(
               opacity: canSend ? 1.0 : 0.5,
               child: ClassicIconButton(
+                onPressed: canSend ? _post : null,
                 child: _posting
                     ? const SizedBox(
                         width: 18,
@@ -92,7 +93,6 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.send, color: Colors.white, size: 18),
-                onPressed: canSend ? _post : null,
               ),
             ),
           ),
@@ -137,7 +137,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                     onAdd: () async {
                       final picker = ImagePicker();
                       final picks = await picker.pickMultiImage(imageQuality: 90, maxWidth: 2048, maxHeight: 2048);
-                      if (picks == null) return;
+                      if (picks.isEmpty) return;
                       setState(() {
                         _images
                           ..clear()

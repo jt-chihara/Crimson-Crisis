@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../state/auth_providers.dart';
 import '../state/feed_providers.dart';
 import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
