@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../models/session.dart';
 import '../models/feed.dart';
 import '../models/profile.dart';
+import '../models/notification.dart';
 
 class PostThreadData {
   final String rootUri;
@@ -364,6 +365,54 @@ class BskyApi {
     final blob = map['blob'];
     if (blob is Map<String, dynamic>) return blob;
     throw StateError('Invalid blob response');
+  }
+
+  // Notifications
+  Future<NotificationResponse> getNotifications({String? cursor, int limit = 50}) async {
+    final res = await _get('app.bsky.notification.listNotifications', {
+      'limit': '$limit',
+      if (cursor != null) 'cursor': cursor,
+    }, auth: true);
+    final map = jsonDecode(res.body) as Map<String, dynamic>;
+    final list = (map['notifications'] as List? ?? [])
+        .whereType<Map>()
+        .map((e) => NotificationItem.fromJson(e.cast<String, dynamic>()))
+        .toList();
+    return NotificationResponse(cursor: map['cursor'] as String?, items: list);
+  }
+
+  // Feed: get posts by URIs -> returns uri -> text
+  Future<Map<String, String>> getPostsTexts(List<String> uris) async {
+    if (uris.isEmpty) return {};
+    final res = await _get('app.bsky.feed.getPosts', {
+      'uris': uris.join(','),
+    }, auth: true);
+    final map = jsonDecode(res.body) as Map<String, dynamic>;
+    final posts = (map['posts'] as List? ?? []);
+    final result = <String, String>{};
+    for (final p in posts) {
+      if (p is Map<String, dynamic>) {
+        final uri = p['uri'] as String?;
+        final record = (p['record'] as Map?)?.cast<String, dynamic>() ?? {};
+        final text = record['text'] as String? ?? '';
+        if (uri != null) result[uri] = text;
+      }
+    }
+    return result;
+  }
+
+  // Feed: get posts as FeedItem views
+  Future<List<FeedItem>> getPosts({required List<String> uris}) async {
+    if (uris.isEmpty) return const [];
+    final res = await _get('app.bsky.feed.getPosts', {
+      'uris': uris.join(','),
+    }, auth: true);
+    final map = jsonDecode(res.body) as Map<String, dynamic>;
+    final posts = (map['posts'] as List? ?? []);
+    return [
+      for (final p in posts)
+        if (p is Map<String, dynamic>) FeedItem.fromJson(p)
+    ];
   }
 
   // Likes
