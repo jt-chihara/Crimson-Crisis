@@ -28,7 +28,7 @@ class _TestSessionController extends SessionController {
 }
 
 void main() {
-  ProviderContainer _makeContainer(BskyApi api) {
+  ProviderContainer makeContainer(BskyApi api) {
     return ProviderContainer(overrides: [
       sessionProvider.overrideWith(() => _TestSessionController(api)),
     ]);
@@ -78,7 +78,7 @@ void main() {
     });
 
     final api = BskyApi(client: client)..setTokens('a', 'r', 'did:me');
-    final container = _makeContainer(api);
+    final container = makeContainer(api);
 
     final data = await container.read(timelineProvider.future);
     final controller = container.read(timelineProvider.notifier);

@@ -192,13 +192,14 @@ class _NotificationListState extends ConsumerState<_NotificationList> {
             return const SizedBox(height: 80);
           }
           final n = _items[index];
+          final nav = Navigator.of(context);
           return _NotificationTile(
             item: n,
             onTap: () async {
               if (n.reason == 'mention' || n.reason == 'reply') {
                 final posts = await _api.getPosts(uris: [n.uri]);
-                if (posts.isNotEmpty && mounted) {
-                  Navigator.of(context).push(
+                if (posts.isNotEmpty) {
+                  nav.push(
                     MaterialPageRoute(
                       builder: (_) => PostDetailScreen(item: posts.first),
                     ),
@@ -206,8 +207,7 @@ class _NotificationListState extends ConsumerState<_NotificationList> {
                 }
               } else {
                 final actor = n.authorDid.isNotEmpty ? n.authorDid : n.authorHandle;
-                if (!mounted) return;
-                Navigator.of(context).push(
+                nav.push(
                   MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor)),
                 );
               }

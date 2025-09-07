@@ -119,7 +119,7 @@ class _SessionStub extends SessionController {
 }
 
 void main() {
-  Future<void> _waitFor(WidgetTester tester, Finder f, {int maxTries = 30}) async {
+  Future<void> waitFor(WidgetTester tester, Finder f, {int maxTries = 30}) async {
     for (int i = 0; i < maxTries; i++) {
       if (tester.any(f)) return;
       await tester.pump(const Duration(milliseconds: 60));
@@ -175,7 +175,7 @@ void main() {
     await tester.scrollUntilVisible(mentionText, 200.0, scrollable: scrollInMentions);
     final tile = find.descendant(of: scrollInMentions, matching: find.byType(InkWell)).first;
     await tester.tap(tile, warnIfMissed: false);
-    await _waitFor(tester, find.text('post body'));
+    await waitFor(tester, find.text('post body'));
     expect(find.text('post body'), findsWidgets);
   });
 }

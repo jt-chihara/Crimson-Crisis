@@ -67,7 +67,7 @@ class _SessionStub extends SessionController {
 }
 
 void main() {
-  Future<void> _waitForFinder(WidgetTester tester, Finder finder,
+  Future<void> waitForFinder(WidgetTester tester, Finder finder,
       {int maxTries = 30}) async {
     for (int i = 0; i < maxTries; i++) {
       if (tester.any(finder)) return;
@@ -129,7 +129,7 @@ void main() {
       matching: find.byType(InkWell),
     );
     await tester.tap(followingInk, warnIfMissed: false);
-    await _waitForFinder(tester, find.text('Alice'));
+    await waitForFinder(tester, find.text('Alice'));
     expect(find.text('Alice'), findsWidgets);
     expect(find.text('Bob'), findsWidgets);
 
@@ -148,7 +148,7 @@ void main() {
       matching: find.byType(InkWell),
     );
     await tester.tap(followersInk, warnIfMissed: false);
-    await _waitForFinder(tester, find.text('Carol'));
+    await waitForFinder(tester, find.text('Carol'));
     expect(find.text('Carol'), findsWidgets);
     expect(find.text('Dave'), findsWidgets);
   });

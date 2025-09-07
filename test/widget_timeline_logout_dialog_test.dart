@@ -8,24 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-FeedItem _feed(String text) => FeedItem(
-      uri: 'u',
-      cid: 'c',
-      authorDid: 'did:me',
-      authorHandle: 'me',
-      authorDisplayName: 'Me',
-      authorAvatar: null,
-      text: text,
-      createdAt: DateTime.now().toUtc(),
-      likeCount: 0,
-      repostCount: 0,
-      replyCount: 0,
-      viewerLike: null,
-      viewerRepost: null,
-      imageThumbUrls: const [],
-      imageFullsizeUrls: const [],
-    );
-
 class _LogoutSpySession extends SessionController {
   bool didLogout = false;
   final BskyApi apiImpl;

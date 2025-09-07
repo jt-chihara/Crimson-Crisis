@@ -28,6 +28,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _onLogin() async {
+    final messenger = ScaffoldMessenger.of(context);
     final id = _identifier.text.trim();
     final pw = _password.text.trim();
     final pds = _pds.text.trim().isEmpty ? 'https://bsky.social' : _pds.text.trim();
@@ -54,7 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() {
         _lastErrorDetails = details;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text('ログインに失敗しました: $summary'),
           action: _lastErrorDetails == null
@@ -69,6 +70,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _showErrorDialog() {
+    final nav = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     final details = _lastErrorDetails;
     if (details == null) return;
     showDialog(
@@ -83,15 +86,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           TextButton(
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: details));
-              if (!mounted) return;
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('詳細をコピーしました')));
+              nav.pop();
+              messenger.showSnackBar(const SnackBar(content: Text('詳細をコピーしました')));
             },
             child: const Text('コピー'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => nav.pop(),
             child: const Text('閉じる'),
           ),
         ],
