@@ -71,7 +71,7 @@ class TimelineScreen extends ConsumerWidget {
                   if (actor.isEmpty) return;
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => ProfileScreen(actor: actor),
+                      builder: (_) => ProfileScreen(actor: actor, showBottomBar: false),
                     ),
                   );
                 },

@@ -106,35 +106,15 @@ class _FollowListScreenState extends ConsumerState<FollowListScreen> {
                     onTap: () {
                       final actor = u.did.isNotEmpty ? u.did : u.handle;
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor)),
+                        MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor, showBottomBar: false)),
                       );
                     },
                   );
                 },
               ),
             ),
-      bottomNavigationBar: ClassicBottomBar(
-        currentIndex: _currentTabIndex(ref),
-        onTap: (i) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
-            (route) => false,
-          );
-        },
-        items: const [
-          ClassicBottomItem(icon: Icons.home, label: 'Home'),
-          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
-          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
-          ClassicBottomItem(icon: Icons.person, label: 'Me'),
-        ],
-      ),
+      // Bottom bar is provided by MainShell to keep tab state fixed
     );
-  }
-
-  int _currentTabIndex(WidgetRef ref) {
-    final ses = ref.watch(sessionProvider).valueOrNull;
-    final isMe = ses != null && (widget.actor == ses.did || widget.actor == ses.handle);
-    return isMe ? 3 : 0; // Me tab when viewing own lists
   }
 }
 

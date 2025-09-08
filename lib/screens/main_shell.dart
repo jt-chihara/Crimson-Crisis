@@ -6,6 +6,7 @@ import 'timeline_screen.dart';
 import 'profile_screen.dart';
 import 'connect_screen.dart';
 import '../widgets/classic_bottom_bar.dart';
+import '../widgets/tab_navigator.dart';
 
 class MainShell extends ConsumerStatefulWidget {
   final int initialIndex;
@@ -17,6 +18,12 @@ class MainShell extends ConsumerStatefulWidget {
 
 class _MainShellState extends ConsumerState<MainShell> {
   late int _index;
+  final _navKeys = <GlobalKey<NavigatorState>>[
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
 
   @override
   void initState() {
@@ -30,26 +37,39 @@ class _MainShellState extends ConsumerState<MainShell> {
     final meActor = session?.did ?? '';
 
     final pages = <Widget>[
-      const TimelineScreen(),
-      const ConnectScreen(),
+      TabNavigator(navigatorKey: _navKeys[0], root: const TimelineScreen()),
+      TabNavigator(navigatorKey: _navKeys[1], root: const ConnectScreen()),
       const _PlaceholderScreen(title: 'Discover'),
       if (meActor.isNotEmpty)
-        ProfileScreen(actor: meActor, showBottomBar: false)
+        TabNavigator(
+          navigatorKey: _navKeys[3],
+          root: ProfileScreen(actor: meActor, showBottomBar: false),
+        )
       else
         const _PlaceholderScreen(title: 'Me'),
     ];
 
-    return Scaffold(
-      body: pages[_index],
-      bottomNavigationBar: ClassicBottomBar(
-        currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
-        items: const [
-          ClassicBottomItem(icon: Icons.home, label: 'Home'),
-          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
-          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
-          ClassicBottomItem(icon: Icons.person, label: 'Me'),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        final nav = _navKeys[_index].currentState;
+        if (nav != null && nav.canPop()) {
+          nav.pop();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: IndexedStack(index: _index, children: pages),
+        bottomNavigationBar: ClassicBottomBar(
+          currentIndex: _index,
+          onTap: (i) => setState(() => _index = i),
+          items: const [
+            ClassicBottomItem(icon: Icons.home, label: 'Home'),
+            ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
+            ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
+            ClassicBottomItem(icon: Icons.person, label: 'Me'),
+          ],
+        ),
       ),
     );
   }
