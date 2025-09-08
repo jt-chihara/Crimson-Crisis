@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../state/auth_providers.dart';
 import '../widgets/classic_app_bar.dart';
-import '../widgets/classic_bottom_bar.dart';
-import 'main_shell.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ComposeScreen extends ConsumerStatefulWidget {

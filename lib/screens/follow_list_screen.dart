@@ -6,8 +6,6 @@ import '../state/auth_providers.dart';
 import '../api/bsky_api.dart';
 import '../models/profile.dart';
 import 'profile_screen.dart';
-import '../widgets/classic_bottom_bar.dart';
-import 'main_shell.dart';
 
 class FollowListScreen extends ConsumerStatefulWidget {
   final String actor; // did or handle

@@ -58,14 +58,15 @@ class _MainShellState extends ConsumerState<MainShell> {
         const _PlaceholderScreen(title: 'Me'),
     ];
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
         final nav = _navKeys[_index].currentState;
         if (nav != null && nav.canPop()) {
           nav.pop();
-          return false;
+          return;
         }
-        return true;
+        Navigator.of(context).maybePop();
       },
       child: Scaffold(
         body: IndexedStack(index: _index, children: pages),
