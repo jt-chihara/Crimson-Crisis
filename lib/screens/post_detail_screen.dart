@@ -238,7 +238,9 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     : (_item.authorHandle.isNotEmpty ? _item.authorHandle : '');
                 if (actor.isEmpty) return;
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor)),
+                  MaterialPageRoute(
+                    builder: (_) => ProfileScreen(actor: actor),
+                  ),
                 );
               },
             );
@@ -345,30 +347,16 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                   ? reply.authorDid
                   : (reply.authorHandle.isNotEmpty ? reply.authorHandle : '');
               if (actor.isEmpty) return;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ProfileScreen(actor: actor),
-                ),
-              );
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ProfileScreen(actor: actor),
+                  ),
+                );
             },
           );
         },
       ),
-      bottomNavigationBar: ClassicBottomBar(
-        currentIndex: 0,
-        onTap: (i) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
-            (route) => false,
-          );
-        },
-        items: const [
-          ClassicBottomItem(icon: Icons.home, label: 'Home'),
-          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
-          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
-          ClassicBottomItem(icon: Icons.person, label: 'Me'),
-        ],
-      ),
+      // Bottom bar is provided by MainShell to keep state fixed
     );
   }
 }
