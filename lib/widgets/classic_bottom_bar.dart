@@ -10,7 +10,14 @@ class ClassicBottomBar extends StatelessWidget {
   final List<ClassicBottomItem> items;
   final int currentIndex;
   final ValueChanged<int> onTap;
-  const ClassicBottomBar({super.key, required this.items, required this.currentIndex, required this.onTap});
+  final ValueChanged<int>? onItemDoubleTap;
+  const ClassicBottomBar({
+    super.key,
+    required this.items,
+    required this.currentIndex,
+    required this.onTap,
+    this.onItemDoubleTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +42,7 @@ class ClassicBottomBar extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () => onTap(i),
+                    onDoubleTap: onItemDoubleTap == null ? null : () => onItemDoubleTap!(i),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Column(
@@ -65,4 +73,3 @@ class ClassicBottomBar extends StatelessWidget {
     );
   }
 }
-

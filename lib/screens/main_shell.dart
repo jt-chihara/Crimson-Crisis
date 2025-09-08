@@ -31,6 +31,15 @@ class _MainShellState extends ConsumerState<MainShell> {
     _index = widget.initialIndex;
   }
 
+  void _onTabTap(int i) {
+    if (i == _index) {
+      final nav = _navKeys[i].currentState;
+      nav?.popUntil((route) => route.isFirst);
+      return;
+    }
+    setState(() => _index = i);
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = ref.watch(sessionProvider).valueOrNull;
@@ -43,7 +52,7 @@ class _MainShellState extends ConsumerState<MainShell> {
       if (meActor.isNotEmpty)
         TabNavigator(
           navigatorKey: _navKeys[3],
-          root: ProfileScreen(actor: meActor, showBottomBar: false),
+          root: ProfileScreen(actor: meActor),
         )
       else
         const _PlaceholderScreen(title: 'Me'),
@@ -62,7 +71,7 @@ class _MainShellState extends ConsumerState<MainShell> {
         body: IndexedStack(index: _index, children: pages),
         bottomNavigationBar: ClassicBottomBar(
           currentIndex: _index,
-          onTap: (i) => setState(() => _index = i),
+          onTap: _onTabTap,
           items: const [
             ClassicBottomItem(icon: Icons.home, label: 'Home'),
             ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),

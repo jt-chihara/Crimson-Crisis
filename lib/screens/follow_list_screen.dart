@@ -106,7 +106,7 @@ class _FollowListScreenState extends ConsumerState<FollowListScreen> {
                     onTap: () {
                       final actor = u.did.isNotEmpty ? u.did : u.handle;
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor, showBottomBar: false)),
+                        MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor)),
                       );
                     },
                   );

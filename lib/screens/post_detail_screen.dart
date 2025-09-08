@@ -206,7 +206,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                 if (actor.isEmpty) return;
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => ProfileScreen(actor: actor, showBottomBar: false),
+                    builder: (_) => ProfileScreen(actor: actor),
                   ),
                 );
               },
@@ -239,7 +239,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                 if (actor.isEmpty) return;
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => ProfileScreen(actor: actor, showBottomBar: false),
+                    builder: (_) => ProfileScreen(actor: actor),
                   ),
                 );
               },
@@ -347,11 +347,11 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                   ? reply.authorDid
                   : (reply.authorHandle.isNotEmpty ? reply.authorHandle : '');
               if (actor.isEmpty) return;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ProfileScreen(actor: actor, showBottomBar: false),
-                ),
-              );
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ProfileScreen(actor: actor),
+                  ),
+                );
             },
           );
         },

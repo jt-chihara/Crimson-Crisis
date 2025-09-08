@@ -208,7 +208,7 @@ class _NotificationListState extends ConsumerState<_NotificationList> {
               } else {
                 final actor = n.authorDid.isNotEmpty ? n.authorDid : n.authorHandle;
                 nav.push(
-                  MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor, showBottomBar: false)),
+                  MaterialPageRoute(builder: (_) => ProfileScreen(actor: actor)),
                 );
               }
             },

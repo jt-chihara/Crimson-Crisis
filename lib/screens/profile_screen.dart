@@ -17,7 +17,7 @@ import 'follow_list_screen.dart';
 class ProfileScreen extends ConsumerStatefulWidget {
   final String actor; // did or handle
   final bool showBottomBar;
-  const ProfileScreen({super.key, required this.actor, this.showBottomBar = true});
+  const ProfileScreen({super.key, required this.actor, this.showBottomBar = false});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -213,20 +213,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       bottomNavigationBar: widget.showBottomBar
           ? ClassicBottomBar(
-        currentIndex: isMe ? 3 : 0,
-        onTap: (i) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
-            (route) => false,
-          );
-        },
-        items: const [
-          ClassicBottomItem(icon: Icons.home, label: 'Home'),
-          ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
-          ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
-          ClassicBottomItem(icon: Icons.person, label: 'Me'),
-        ],
-      )
+              currentIndex: isMe ? 3 : 0,
+              onTap: (i) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => MainShell(initialIndex: i)),
+                  (route) => false,
+                );
+              },
+              items: const [
+                ClassicBottomItem(icon: Icons.home, label: 'Home'),
+                ClassicBottomItem(icon: Icons.alternate_email, label: 'Connect'),
+                ClassicBottomItem(icon: Icons.tag, label: 'Discover'),
+                ClassicBottomItem(icon: Icons.person, label: 'Me'),
+              ],
+            )
           : null,
     );
   }
