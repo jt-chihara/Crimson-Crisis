@@ -9,8 +9,6 @@ import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
 import 'reply_screen.dart';
 import 'compose_screen.dart';
-import '../widgets/classic_bottom_bar.dart';
-import 'main_shell.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
   final FeedItem item;
