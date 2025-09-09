@@ -9,7 +9,8 @@ import '../models/profile.dart';
 import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
 import 'post_detail_screen.dart';
-import 'compose_screen.dart';
+// import 'compose_screen.dart';
+import '../widgets/compose_sheet.dart';
 import '../widgets/classic_bottom_bar.dart';
 import 'main_shell.dart';
 import 'follow_list_screen.dart';
@@ -162,9 +163,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             : [
                 ClassicIconButton(
                   icon: Icons.edit,
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ComposeScreen()),
-                  ),
+                  onPressed: () => showComposeSheet(context),
                 ),
               ],
       ),
