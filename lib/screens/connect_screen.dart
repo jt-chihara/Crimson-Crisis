@@ -7,7 +7,6 @@ import '../state/auth_providers.dart';
 import '../api/bsky_api.dart';
 import '../models/notification.dart';
 import 'profile_screen.dart';
-// import 'compose_screen.dart';
 import '../widgets/compose_sheet.dart';
 import 'main_shell.dart';
 import 'post_detail_screen.dart';

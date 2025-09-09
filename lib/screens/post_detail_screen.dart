@@ -7,7 +7,6 @@ import '../state/auth_providers.dart';
 import 'profile_screen.dart';
 import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
-// import 'compose_screen.dart';
 import '../widgets/compose_sheet.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
