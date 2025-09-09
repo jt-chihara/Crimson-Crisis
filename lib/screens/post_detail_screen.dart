@@ -7,8 +7,8 @@ import '../state/auth_providers.dart';
 import 'profile_screen.dart';
 import '../widgets/post_tile.dart';
 import '../widgets/classic_app_bar.dart';
-import 'reply_screen.dart';
-import 'compose_screen.dart';
+// import 'compose_screen.dart';
+import '../widgets/compose_sheet.dart';
 
 class PostDetailScreen extends ConsumerStatefulWidget {
   final FeedItem item;
@@ -129,9 +129,12 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
         actions: [
           ClassicIconButton(
             icon: Icons.edit,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ComposeScreen()),
-            ),
+            onPressed: () async {
+              final ok = await showComposeSheet(context);
+              if (ok == true) {
+                await _loadReplies();
+              }
+            },
           ),
         ],
       ),
@@ -216,14 +219,13 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
               item: _item,
               timestamp: ts,
               onReply: () async {
-                final ok = await Navigator.of(context).push<bool>(
-                  MaterialPageRoute(
-                    builder: (_) => ReplyScreen(
-                      parent: _item,
-                      rootUri: _rootUri ?? _item.uri,
-                      rootCid: _rootCid ?? _item.cid,
-                    ),
-                  ),
+                final ok = await showComposeSheet(
+                  context,
+                  reply: true,
+                  parentUri: _item.uri,
+                  parentCid: _item.cid,
+                  rootUri: _rootUri ?? _item.uri,
+                  rootCid: _rootCid ?? _item.cid,
                 );
                 if (ok == true) {
                   await _loadReplies();
@@ -256,14 +258,13 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
               leading: const Icon(Icons.reply),
               title: const Text('返信を書く'),
               onTap: () async {
-                final ok = await Navigator.of(context).push<bool>(
-                  MaterialPageRoute(
-                    builder: (_) => ReplyScreen(
-                      parent: _item,
-                      rootUri: _rootUri ?? _item.uri,
-                      rootCid: _rootCid ?? _item.cid,
-                    ),
-                  ),
+                final ok = await showComposeSheet(
+                  context,
+                  reply: true,
+                  parentUri: _item.uri,
+                  parentCid: _item.cid,
+                  rootUri: _rootUri ?? _item.uri,
+                  rootCid: _rootCid ?? _item.cid,
                 );
                 if (ok == true) {
                   await _loadReplies();
