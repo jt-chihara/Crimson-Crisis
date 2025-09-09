@@ -24,6 +24,22 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
     super.dispose();
   }
 
+  void _showLocationInfo() {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('これはダミーです'),
+        content: const Text('blueskyは位置情報を追加できません'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _post() async {
     if (_posting) return;
     final api = ref.read(sessionProvider.notifier).api;
@@ -156,9 +172,21 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Icon(Icons.near_me, color: Colors.grey[600], size: 20),
-                  const SizedBox(width: 6),
-                  Text('位置情報を追加', style: TextStyle(color: Colors.grey[700])),
+                  InkWell(
+                    onTap: _showLocationInfo,
+                    borderRadius: BorderRadius.circular(6),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.near_me, color: Colors.grey[600], size: 20),
+                          const SizedBox(width: 6),
+                          Text('位置情報を追加', style: TextStyle(color: Colors.grey[700])),
+                        ],
+                      ),
+                    ),
+                  ),
                   const Spacer(),
                   Text(
                     '$remain',
