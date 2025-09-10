@@ -49,13 +49,14 @@ class BskyApi {
     return uri.replace(queryParameters: {...uri.queryParameters, ...params});
   }
 
-  Map<String, String> _headers({bool auth = false}) {
+  Map<String, String> _headers({bool auth = false, Map<String, String>? extra}) {
     final headers = <String, String>{
       'Content-Type': 'application/json; charset=utf-8',
     };
     if (auth && _accessJwt != null) {
       headers['Authorization'] = 'Bearer $_accessJwt';
     }
+        if (extra != null) headers.addAll(extra);
     return headers;
   }
 
@@ -92,11 +93,11 @@ class BskyApi {
   }
 
   Future<http.Response> _get(String nsid, Map<String, String> params,
-      {bool auth = false}) async {
+      {bool auth = false, Map<String, String>? extraHeaders}) async {
     return _withRefresh(
       () => _client.get(
         _xrpc(nsid, params),
-        headers: _headers(auth: auth),
+        headers: _headers(auth: auth, extra: extraHeaders),
       ),
       auth: auth,
     );
@@ -227,6 +228,46 @@ class BskyApi {
     }, auth: true);
     final map = jsonDecode(res.body) as Map<String, dynamic>;
     return TimelineResponse.fromJson(map);
+  }
+
+  // Feed: custom/generator feed (e.g. What's Hot)
+  Future<TimelineResponse> getFeed({
+    required String feedUri, // e.g. at://bsky.app/app.bsky.feed.generator/whats-hot
+    String? cursor,
+    int limit = 30,
+    String? acceptLanguage,
+  }) async {
+    try {
+      final res = await _get('app.bsky.feed.getFeed', {
+        'feed': feedUri,
+        'limit': '$limit',
+        if (cursor != null) 'cursor': cursor,
+      }, auth: true, extraHeaders: {
+        if (acceptLanguage != null && acceptLanguage.isNotEmpty) 'Accept-Language': acceptLanguage,
+      });
+      final map = jsonDecode(res.body) as Map<String, dynamic>;
+      return TimelineResponse.fromJson(map);
+    } catch (_) {
+      // Fallback: some PDS may only expose the skeleton; materialize via getPosts
+      final sk = await _get('app.bsky.feed.getFeedSkeleton', {
+        'feed': feedUri,
+        'limit': '$limit',
+        if (cursor != null) 'cursor': cursor,
+      }, auth: true, extraHeaders: {
+        if (acceptLanguage != null && acceptLanguage.isNotEmpty) 'Accept-Language': acceptLanguage,
+      });
+      final map = jsonDecode(sk.body) as Map<String, dynamic>;
+      final list = (map['feed'] as List? ?? []);
+      final uris = <String>[];
+      for (final e in list) {
+        if (e is Map<String, dynamic>) {
+          final u = e['post'] as String?; // AT URI
+          if (u != null && u.isNotEmpty) uris.add(u);
+        }
+      }
+      final posts = await getPosts(uris: uris);
+      return TimelineResponse(cursor: map['cursor'] as String?, feed: posts);
+    }
   }
 
   // Feed: post thread (replies)

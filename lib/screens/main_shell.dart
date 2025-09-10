@@ -5,6 +5,7 @@ import '../state/auth_providers.dart';
 import 'timeline_screen.dart';
 import 'profile_screen.dart';
 import 'connect_screen.dart';
+import 'discover_screen.dart';
 import '../widgets/classic_bottom_bar.dart';
 import '../widgets/tab_navigator.dart';
 
@@ -48,7 +49,7 @@ class _MainShellState extends ConsumerState<MainShell> {
     final pages = <Widget>[
       TabNavigator(navigatorKey: _navKeys[0], root: const TimelineScreen()),
       TabNavigator(navigatorKey: _navKeys[1], root: const ConnectScreen()),
-      const _PlaceholderScreen(title: 'Discover'),
+      TabNavigator(navigatorKey: _navKeys[2], root: const DiscoverScreen()),
       if (meActor.isNotEmpty)
         TabNavigator(
           navigatorKey: _navKeys[3],
