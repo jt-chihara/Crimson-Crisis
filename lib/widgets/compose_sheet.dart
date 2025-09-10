@@ -116,8 +116,8 @@ class _ComposeSheetState extends ConsumerState<_ComposeSheet> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('お知らせ'),
-        content: const Text('これはダミーです。blueskyは位置情報を追加できません'),
+        title: const Text('これはダミーです'),
+        content: const Text('blueskyは位置情報を追加できません'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
