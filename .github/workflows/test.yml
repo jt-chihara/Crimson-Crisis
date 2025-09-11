@@ -29,6 +29,8 @@ jobs:
 
       - name: Run unit tests
         run: flutter test --no-pub --reporter expanded
+      - name: Run integration tests (headless)
+        run: flutter test --no-pub --reporter expanded integration_test
 
       - name: Upload coverage (artifact)
         if: success()
